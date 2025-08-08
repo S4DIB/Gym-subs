@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
@@ -16,6 +16,12 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Gym Subscription App",
   description: "A modern gym subscription application built with Next.js and ShadCN UI",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({

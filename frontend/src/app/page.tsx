@@ -3,8 +3,8 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useState } from "react";
-import { toast } from "sonner";
+import Link from "next/link";
+import Image from "next/image";
 import { 
   Dumbbell, 
   Users, 
@@ -25,14 +25,6 @@ import StatsSection from "@/components/stats-section";
 import ContactForm from "@/components/contact-form";
 
 export default function Home() {
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleGetStarted = async () => {
-    setIsLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    setIsLoading(false);
-    toast.success("🎯 Welcome to FitLife! Let's get you started on your fitness journey!");
-  };
 
   const features = [
     {
@@ -63,25 +55,60 @@ export default function Home() {
       price: "$29",
       period: "/month",
       description: "Perfect for beginners",
-      features: ["Access to gym floor", "Basic equipment", "Locker room access", "Free parking"],
-      popular: false
+      features: [
+        "Access to gym floor",
+        "Basic equipment",
+        "Locker room access",
+        "Free parking",
+      ],
+      facilities: [
+        "Cardio zone",
+        "Free weights area",
+        "Locker room",
+        "Parking",
+      ],
+      popular: false,
     },
     {
       name: "Premium",
       price: "$59",
       period: "/month",
       description: "Most popular choice",
-      features: ["All Starter features", "Group classes", "Personal trainer sessions", "Spa access", "Nutrition consultation"],
-      popular: true
+      features: [
+        "All Starter features",
+        "Group classes",
+        "Personal trainer sessions",
+        "Spa access",
+        "Nutrition consultation",
+      ],
+      facilities: [
+        "All Starter facilities",
+        "Group studio access",
+        "Sauna",
+        "Nutrition lounge",
+      ],
+      popular: true,
     },
     {
       name: "Elite",
       price: "$99",
       period: "/month",
       description: "Ultimate fitness experience",
-      features: ["All Premium features", "Private training", "Spa treatments", "Guest passes", "Priority booking"],
-      popular: false
-    }
+      features: [
+        "All Premium features",
+        "Private training",
+        "Spa treatments",
+        "Guest passes",
+        "Priority booking",
+      ],
+      facilities: [
+        "All Premium facilities",
+        "Private studio",
+        "Spa & recovery zone",
+        "VIP lounge",
+      ],
+      popular: false,
+    },
   ];
 
   const testimonials = [
@@ -114,6 +141,19 @@ export default function Home() {
       
       {/* Hero Section */}
       <section className="relative overflow-hidden pt-16 hero-gradient">
+        {/* Background image (add public/hero-gym.jpg) */}
+        <div className="absolute inset-0">
+          <Image
+            src="/hero-gym.png"
+            alt="Members training at FitLife gym"
+            fill
+            priority
+            className="object-cover object-[center_35%] opacity-30"
+            aria-hidden
+          />
+        </div>
+        {/* Top fade to keep header readable and hide top of image */}
+        <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/20 to-transparent"></div>
         <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20"></div>
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.05)_1px,transparent_0)] bg-[length:20px_20px]"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
@@ -136,20 +176,12 @@ export default function Home() {
               <Button 
                 size="lg" 
                 className="px-8 py-6 text-lg font-semibold hover:scale-105 transition-all duration-200 btn-premium premium-shadow-lg"
-                onClick={handleGetStarted}
-                disabled={isLoading}
+                asChild
               >
-                {isLoading ? (
-                  <>
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                    Getting Started...
-                  </>
-                ) : (
-                  <>
-                    Get Started Today
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </>
-                )}
+                <Link href={{ pathname: "/login", query: { redirect: "/join" } }}>
+                  Get Started Today
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
               </Button>
               <Button 
                 variant="outline" 
@@ -234,19 +266,38 @@ export default function Home() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ul className="space-y-3 mb-8">
-                    {plan.features.map((feature, featureIndex) => (
-                      <li key={featureIndex} className="flex items-center">
-                        <Check className="h-4 w-4 text-primary mr-3 flex-shrink-0" />
-                        <span className="text-sm text-muted-foreground">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
+                  <div className="grid gap-6">
+                    <div>
+                      <div className="font-semibold mb-2 text-gradient-primary">Features</div>
+                      <ul className="space-y-2">
+                        {plan.features.map((feature, featureIndex) => (
+                          <li key={featureIndex} className="flex items-center">
+                            <Check className="h-4 w-4 text-primary mr-3 flex-shrink-0" />
+                            <span className="text-sm text-muted-foreground">{feature}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div>
+                      <div className="font-semibold mb-2 text-gradient-primary">Facilities</div>
+                      <ul className="space-y-2">
+                        {plan.facilities?.map((facility, idx) => (
+                          <li key={idx} className="flex items-center">
+                            <Check className="h-4 w-4 text-primary mr-3 flex-shrink-0" />
+                            <span className="text-sm text-muted-foreground">{facility}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
                   <Button 
-                    className={`w-full ${plan.popular ? 'btn-premium' : 'glass-effect'}`}
+                    className={`w-full mt-6 ${plan.popular ? 'btn-premium' : 'glass-effect'}`}
                     variant={plan.popular ? 'default' : 'outline'}
+                    asChild
                   >
-                    Choose {plan.name}
+                    <Link href={{ pathname: "/login", query: { redirect: `/join?plan=${plan.name.toLowerCase()}` } }}>
+                      Choose {plan.name}
+                    </Link>
                   </Button>
                 </CardContent>
               </Card>
@@ -311,9 +362,12 @@ export default function Home() {
             size="lg" 
             variant="secondary"
             className="px-8 py-6 text-lg font-semibold hover:scale-105 transition-all duration-200 btn-premium"
+            asChild
           >
-            Start Your Free Trial
-            <ArrowRight className="ml-2 h-5 w-5" />
+            <Link href="/trial">
+              Start Your Free Trial
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Link>
           </Button>
         </div>
       </section>
