@@ -12,12 +12,14 @@ import { toast } from "sonner";
 import Link from "next/link";
 import { ArrowLeft, Check, Eye, EyeOff, Apple, Mail } from "lucide-react";
 import { useState } from "react";
+import { createSupabaseBrowserClient } from "@/lib/supabase";
 
 export default function LoginPage() {
   const router = useRouter();
   const params = useSearchParams();
   const redirectTo = params.get("redirect") || "/";
   const [showPassword, setShowPassword] = useState(false);
+  const supabase = createSupabaseBrowserClient();
 
   const handleGuest = () => {
     document.cookie = `guest=1; path=/`;
@@ -26,25 +28,41 @@ export default function LoginPage() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    toast.success("Logged in (demo)");
-    document.cookie = `guest=1; path=/`;
-    router.push(redirectTo);
+    const form = new FormData(e.currentTarget);
+    const email = String(form.get("email") || "");
+    const password = String(form.get("password") || "");
+    supabase.auth
+      .signInWithPassword({ email, password })
+      .then(({ error }: { error: { message: string } | null }) => {
+        if (error) throw error;
+        toast.success("Signed in");
+        router.push(redirectTo);
+      })
+      .catch((err: { message: string }) => toast.error(err.message));
   };
 
   const handleSignup = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    toast.success("Account created (demo)");
-    document.cookie = `guest=1; path=/`;
-    router.push(redirectTo);
+    const form = new FormData(e.currentTarget);
+    const email = String(form.get("email") || form.get("email2") || "");
+    const password = String(form.get("password") || form.get("password2") || "");
+    supabase.auth
+      .signUp({ email, password })
+      .then(({ error }: { error: { message: string } | null }) => {
+        if (error) throw error;
+        toast.success("Check your email to confirm your account");
+        router.push(redirectTo);
+      })
+      .catch((err: { message: string }) => toast.error(err.message));
   };
 
   return (
     <div className="min-h-screen premium-gradient">
       <Header />
       <main className="pt-24 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-xl mx-auto">
+        <div className="max-w-2xl mx-auto min-h-[70vh] flex items-center justify-center">
           {/* Auth Panel */}
-          <Card className="card-gradient premium-shadow">
+          <Card className="card-gradient premium-shadow w-full">
               <CardHeader>
                 <CardTitle className="text-3xl">Create an account</CardTitle>
                 <CardDescription>
@@ -80,10 +98,26 @@ export default function LoginPage() {
                         <span className="flex-1 h-px bg-white/10" /> Or continue with <span className="flex-1 h-px bg-white/10" />
                       </div>
                       <div className="grid grid-cols-2 gap-3">
-                        <Button variant="outline" className="glass-effect w-full" type="button">
+                        <Button
+                          variant="outline"
+                          className="glass-effect w-full"
+                          type="button"
+                          onClick={async () => {
+                            const { error } = await supabase.auth.signInWithOAuth({ provider: "google" });
+                            if (error) toast.error(error.message);
+                          }}
+                        >
                           <Mail className="h-4 w-4 mr-2" /> Google
                         </Button>
-                        <Button variant="outline" className="glass-effect w-full" type="button">
+                        <Button
+                          variant="outline"
+                          className="glass-effect w-full"
+                          type="button"
+                          onClick={async () => {
+                            const { error } = await supabase.auth.signInWithOAuth({ provider: "apple" });
+                            if (error) toast.error(error.message);
+                          }}
+                        >
                           <Apple className="h-4 w-4 mr-2" /> Apple
                         </Button>
                       </div>
