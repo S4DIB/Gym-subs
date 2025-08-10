@@ -27,21 +27,26 @@ export default function ContactForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    setIsSubmitting(false);
-    toast.success("🎉 Thank you! We'll get back to you within 24 hours.");
-    
-    // Reset form
-    setFormData({
-      name: "",
-      email: "",
-      phone: "",
-      message: "",
-      interest: "general"
-    });
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      if (!res.ok) throw new Error("Failed to submit");
+      toast.success("🎉 Thank you! We'll get back to you within 24 hours.");
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        message: "",
+        interest: "general",
+      });
+    } catch (err: any) {
+      toast.error(err?.message || "Something went wrong.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {

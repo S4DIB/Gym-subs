@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { createSupabaseServerClient } from "@/lib/supabase";
 
-export async function middleware(request: NextRequest) {
+export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Public routes that should not be forced to login
@@ -17,16 +16,11 @@ export async function middleware(request: NextRequest) {
 
   if (isPublic) return NextResponse.next();
 
-  // Check Supabase session
-  const supabase = createSupabaseServerClient(() => request.headers.get("cookie") ?? undefined);
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+  const hasGuest = request.cookies.get("guest");
 
-  if (!session) {
+  if (!hasGuest) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
-    url.searchParams.set("redirect", request.nextUrl.pathname + request.nextUrl.search);
     return NextResponse.redirect(url);
   }
 
