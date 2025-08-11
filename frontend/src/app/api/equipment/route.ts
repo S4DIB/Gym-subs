@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth, adminDb } from '@/lib/firebase/admin';
 import { z } from 'zod';
 
+// Admin email addresses - same as frontend
+const ADMIN_EMAILS = [
+  "shahsadib25@gmail.com",
+  "admin@fitlife.com",
+];
+
 // Validation schemas
 const equipmentSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -29,18 +35,19 @@ export async function GET(request: NextRequest) {
 
     const token = authHeader.replace('Bearer ', '');
     let userId: string;
+    let userEmail: string;
     
     try {
       const decodedToken = await adminAuth.verifyIdToken(token);
       userId = decodedToken.uid;
+      userEmail = decodedToken.email || '';
     } catch (authError) {
       console.error('Auth error:', authError);
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
     }
 
-    // Check if user is admin
-    const userDoc = await adminDb.collection('users').doc(userId).get();
-    if (!userDoc.exists || !userDoc.data()?.isAdmin) {
+    // Check if user is admin by email
+    if (!ADMIN_EMAILS.includes(userEmail.toLowerCase())) {
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
     }
 
@@ -49,7 +56,7 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get('category');
     const search = searchParams.get('search');
 
-    let query = adminDb.collection('equipment');
+    let query: any = adminDb.collection('equipment');
 
     // Apply filters
     if (status && status !== 'all') {
@@ -60,7 +67,7 @@ export async function GET(request: NextRequest) {
     }
 
     const snapshot = await query.get();
-    let equipment = snapshot.docs.map(doc => ({
+    let equipment = snapshot.docs.map((doc: any) => ({
       id: doc.id,
       ...doc.data()
     }));
@@ -68,7 +75,7 @@ export async function GET(request: NextRequest) {
     // Apply search filter in memory
     if (search) {
       const searchLower = search.toLowerCase();
-      equipment = equipment.filter(item => 
+      equipment = equipment.filter((item: any) => 
         item.name.toLowerCase().includes(searchLower) ||
         item.category.toLowerCase().includes(searchLower) ||
         item.location?.toLowerCase().includes(searchLower) ||
@@ -93,18 +100,19 @@ export async function POST(request: NextRequest) {
 
     const token = authHeader.replace('Bearer ', '');
     let userId: string;
+    let userEmail: string;
     
     try {
       const decodedToken = await adminAuth.verifyIdToken(token);
       userId = decodedToken.uid;
+      userEmail = decodedToken.email || '';
     } catch (authError) {
       console.error('Auth error:', authError);
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
     }
 
-    // Check if user is admin
-    const userDoc = await adminDb.collection('users').doc(userId).get();
-    if (!userDoc.exists || !userDoc.data()?.isAdmin) {
+    // Check if user is admin by email
+    if (!ADMIN_EMAILS.includes(userEmail.toLowerCase())) {
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
     }
 
@@ -143,7 +151,7 @@ export async function POST(request: NextRequest) {
   } catch (error: unknown) {
     console.error('Create equipment error:', error);
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: 'Invalid equipment data', details: error.errors }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid equipment data', details: (error as any).errors }, { status: 400 });
     }
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }

@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth, adminDb } from '@/lib/firebase/admin';
 import { z } from 'zod';
 
+// Admin email addresses - same as frontend
+const ADMIN_EMAILS = [
+  "shahsadib25@gmail.com",
+  "admin@fitlife.com",
+];
+
 // Validation schemas
 const memberSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
@@ -39,18 +45,19 @@ export async function GET(request: NextRequest) {
 
     const token = authHeader.replace('Bearer ', '');
     let userId: string;
+    let userEmail: string;
     
     try {
       const decodedToken = await adminAuth.verifyIdToken(token);
       userId = decodedToken.uid;
+      userEmail = decodedToken.email || '';
     } catch (authError) {
       console.error('Auth error:', authError);
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
     }
 
-    // Check if user is admin
-    const userDoc = await adminDb.collection('users').doc(userId).get();
-    if (!userDoc.exists || !userDoc.data()?.isAdmin) {
+    // Check if user is admin by email
+    if (!ADMIN_EMAILS.includes(userEmail.toLowerCase())) {
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
     }
 
@@ -78,7 +85,7 @@ export async function GET(request: NextRequest) {
     // Apply search filter in memory
     if (search) {
       const searchLower = search.toLowerCase();
-      members = members.filter(member => 
+      members = members.filter((member: any) => 
         member.firstName?.toLowerCase().includes(searchLower) ||
         member.lastName?.toLowerCase().includes(searchLower) ||
         member.email?.toLowerCase().includes(searchLower) ||
@@ -103,18 +110,19 @@ export async function POST(request: NextRequest) {
 
     const token = authHeader.replace('Bearer ', '');
     let userId: string;
+    let userEmail: string;
     
     try {
       const decodedToken = await adminAuth.verifyIdToken(token);
       userId = decodedToken.uid;
+      userEmail = decodedToken.email || '';
     } catch (authError) {
       console.error('Auth error:', authError);
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
     }
 
-    // Check if user is admin
-    const userDoc = await adminDb.collection('users').doc(userId).get();
-    if (!userDoc.exists || !userDoc.data()?.isAdmin) {
+    // Check if user is admin by email
+    if (!ADMIN_EMAILS.includes(userEmail.toLowerCase())) {
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
     }
 

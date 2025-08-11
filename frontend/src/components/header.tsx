@@ -55,12 +55,6 @@ export default function Header() {
             </Button>
             {user ? (
               <>
-                {/* Debug: Show user email and admin status */}
-                {process.env.NODE_ENV === 'development' && (
-                  <div className="text-xs text-yellow-400 mr-2">
-                    {user.email} | Admin: {isAdmin ? 'YES' : 'NO'}
-                  </div>
-                )}
                 {isAdmin && (
                   <Button variant="ghost" size="sm" className="glass-effect text-red-400 border-red-400/20" asChild>
                     <Link href="/admin">
