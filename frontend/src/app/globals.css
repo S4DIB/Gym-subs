@@ -416,3 +416,14 @@ body {
   font-feature-settings: "rlig" 1, "calt" 1;
   min-height: 100vh;
 }
+
+/* Solid Dialog Background */
+.solid-dialog {
+  background-color: hsl(var(--background)) !important;
+  backdrop-filter: none !important;
+  opacity: 1 !important;
+}
+
+.solid-dialog-overlay {
+  background-color: rgba(0, 0, 0, 0.8) !important;
+}

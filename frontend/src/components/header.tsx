@@ -3,11 +3,14 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
-import { Menu, X, User, Phone, MapPin } from "lucide-react";
+import { Menu, X, User, Phone, MapPin, LogOut } from "lucide-react";
 import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, logout } = useAuth();
+  const isAdmin = user?.email ? ["shahsadib25@gmail.com", "admin@fitlife.com"].includes(user.email) : false;
 
   const navigation = [
     { name: "Home", href: "/" },
@@ -50,12 +53,40 @@ export default function Header() {
                 Contact
               </Link>
             </Button>
-            <Button size="sm" className="btn-premium" asChild>
-              <Link href={{ pathname: "/login", query: { redirect: "/join" } }}>
-                <User className="h-4 w-4 mr-2" />
-                Join Now
-              </Link>
-            </Button>
+            {user ? (
+              <>
+                {/* Debug: Show user email and admin status */}
+                {process.env.NODE_ENV === 'development' && (
+                  <div className="text-xs text-yellow-400 mr-2">
+                    {user.email} | Admin: {isAdmin ? 'YES' : 'NO'}
+                  </div>
+                )}
+                {isAdmin && (
+                  <Button variant="ghost" size="sm" className="glass-effect text-red-400 border-red-400/20" asChild>
+                    <Link href="/admin">
+                      Admin
+                    </Link>
+                  </Button>
+                )}
+                <Button variant="ghost" size="sm" className="glass-effect" asChild>
+                  <Link href="/dashboard">
+                    <User className="h-4 w-4 mr-2" />
+                    Dashboard
+                  </Link>
+                </Button>
+                <Button size="sm" variant="outline" className="glass-effect" onClick={logout}>
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <Button size="sm" className="btn-premium" asChild>
+                <Link href={{ pathname: "/login", query: { redirect: "/join" } }}>
+                  <User className="h-4 w-4 mr-2" />
+                  Join Now
+                </Link>
+              </Button>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -96,12 +127,34 @@ export default function Header() {
                     Contact
                   </Link>
                 </Button>
-                <Button className="w-full justify-start btn-premium" asChild>
-                  <Link href={{ pathname: "/login", query: { redirect: "/join" } }}>
-                    <User className="h-4 w-4 mr-2" />
-                    Join Now
-                  </Link>
-                </Button>
+                {user ? (
+                  <>
+                    {isAdmin && (
+                      <Button variant="ghost" className="w-full justify-start glass-effect text-red-400" asChild>
+                        <Link href="/admin">
+                          Admin Panel
+                        </Link>
+                      </Button>
+                    )}
+                    <Button variant="ghost" className="w-full justify-start glass-effect" asChild>
+                      <Link href="/dashboard">
+                        <User className="h-4 w-4 mr-2" />
+                        Dashboard
+                      </Link>
+                    </Button>
+                    <Button variant="outline" className="w-full justify-start glass-effect" onClick={logout}>
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Logout
+                    </Button>
+                  </>
+                ) : (
+                  <Button className="w-full justify-start btn-premium" asChild>
+                    <Link href={{ pathname: "/login", query: { redirect: "/join" } }}>
+                      <User className="h-4 w-4 mr-2" />
+                      Join Now
+                    </Link>
+                  </Button>
+                )}
               </div>
             </div>
           </div>

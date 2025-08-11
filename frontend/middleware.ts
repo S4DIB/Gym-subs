@@ -16,9 +16,10 @@ export function middleware(request: NextRequest) {
 
   if (isPublic) return NextResponse.next();
 
+  const hasAuth = request.cookies.get("auth");
   const hasGuest = request.cookies.get("guest");
 
-  if (!hasGuest) {
+  if (!hasAuth && !hasGuest) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
