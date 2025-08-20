@@ -1,40 +1,40 @@
-# 🏋️‍♂️ Gym Subscription Management System
+# Gym Subscription Management System
 
 A comprehensive gym management application built with Next.js, Firebase, and Stripe for handling gym memberships, payments, and user management.
 
-## ✨ Features
+## Features
 
-### 🔐 Authentication & User Management
+### Authentication & User Management
 - **Firebase Authentication** with Google Sign-In
 - **Role-based access control** (Admin, Member, Trainer)
 - **Secure session management** with JWT tokens
 - **User profile management**
 
-### 💳 Membership & Billing
+### Membership & Billing
 - **Stripe integration** for payment processing
 - **Multiple membership tiers** (Basic, Premium, VIP)
 - **Subscription management** and billing history
 - **Automatic payment processing**
 
-### 🏃‍♀️ Fitness Tracking
+### Fitness Tracking
 - **Workout logging** and progress tracking
 - **Personal records** management
 - **Exercise library** with customizable routines
 - **Progress analytics** and statistics
 
-### 👥 Member Management
+### Member Management
 - **Member database** with detailed profiles
 - **Emergency contact** information
 - **Membership status** tracking
 - **Communication preferences**
 
-### 🎯 Class & Training
+### Class & Training
 - **Class scheduling** and management
 - **Trainer profiles** and availability
 - **Equipment tracking** and maintenance
 - **Booking system** for sessions
 
-## 🚀 Tech Stack
+## Tech Stack
 
 - **Frontend**: Next.js 15, React 19, TypeScript
 - **Styling**: Tailwind CSS, Radix UI components
@@ -44,7 +44,7 @@ A comprehensive gym management application built with Next.js, Firebase, and Str
 - **Testing**: Jest, React Testing Library
 - **Deployment**: Vercel (recommended)
 
-## 📋 Prerequisites
+## Prerequisites
 
 Before running this project, ensure you have:
 
@@ -54,7 +54,7 @@ Before running this project, ensure you have:
 - **Stripe** account for payment processing
 - **Git** for version control
 
-## 🛠️ Installation & Setup
+## Installation & Setup
 
 ### 1. Clone the Repository
 
@@ -118,7 +118,7 @@ npm run db:init
 yarn db:init
 ```
 
-## 🏃‍♂️ Development
+## Development
 
 ### Start Development Server
 
@@ -146,7 +146,7 @@ npm run start
 yarn start
 ```
 
-## 🧪 Testing
+## Testing
 
 ### Run All Tests
 
@@ -180,7 +180,7 @@ npm run test:ci
 yarn test:ci
 ```
 
-## 📚 Project Structure
+## Project Structure
 
 ```
 src/
@@ -201,7 +201,7 @@ src/
 └── __tests__/            # Test files
 ```
 
-## 🔧 Available Scripts
+## Available Scripts
 
 - **`npm run dev`** - Start development server
 - **`npm run build`** - Build for production
@@ -212,7 +212,7 @@ src/
 - **`npm run test:coverage`** - Generate coverage report
 - **`npm run test:ci`** - Run tests for CI/CD
 
-## 🌐 API Endpoints
+## API Endpoints
 
 ### Authentication
 - `POST /api/auth/login` - User login
@@ -234,7 +234,7 @@ src/
 - `POST /api/workouts` - Log new workout
 - `PUT /api/workouts/:id` - Update workout
 
-## 🔒 Security Features
+## Security Features
 
 - **JWT token validation** for API routes
 - **Role-based access control** (RBAC)
@@ -243,7 +243,7 @@ src/
 - **Rate limiting** on API endpoints
 - **Secure environment variables**
 
-## 🚀 Deployment
+## Deployment
 
 ### Vercel (Recommended)
 
@@ -259,7 +259,7 @@ The app can be deployed to any platform that supports Node.js:
 - **Heroku**
 - **AWS Amplify**
 
-## 🤝 Contributing
+## Contributing
 
 ### Development Workflow
 
@@ -287,7 +287,7 @@ The app can be deployed to any platform that supports Node.js:
 - **[Testing Guide](./docs/TESTING.md)** - Testing strategies and examples
 - **[Deployment Guide](./docs/DEPLOYMENT.md)** - Deployment instructions
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -303,11 +303,11 @@ The app can be deployed to any platform that supports Node.js:
 - **Create a new issue** with detailed information
 - **Contact the development team**
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - **Next.js team** for the amazing framework
 - **Firebase team** for backend services
@@ -316,7 +316,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Radix UI** for accessible components
 
 ---
-
-**Built with ❤️ by the Gym Subscription Team**
-
-For questions or support, please open an issue on GitHub or contact the development team.
