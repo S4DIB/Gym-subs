@@ -4,6 +4,16 @@ import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Button variant configurations using class-variance-authority
+ * 
+ * Defines different visual styles and sizes for buttons:
+ * - Variants: default, destructive, outline, secondary, ghost, link
+ * - Sizes: default, sm, lg, icon
+ * 
+ * @constant {Function} buttonVariants
+ * @returns {string} Tailwind CSS classes for the button
+ */
 const buttonVariants = cva(
   "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
   {
@@ -35,6 +45,50 @@ const buttonVariants = cva(
   }
 )
 
+/**
+ * Button component with multiple variants and sizes
+ * 
+ * A flexible button component that supports:
+ * - Multiple visual variants (default, destructive, outline, etc.)
+ * - Different sizes (small, default, large, icon)
+ * - Child element rendering (asChild prop)
+ * - All standard button HTML attributes
+ * - Accessibility features (focus states, ARIA support)
+ * 
+ * @param {Object} props - Button component props
+ * @param {string} [props.className] - Additional CSS classes to apply
+ * @param {string} [props.variant] - Visual style variant of the button
+ * @param {string} [props.size] - Size variant of the button
+ * @param {boolean} [props.asChild] - Whether to render as a child element instead of button
+ * @param {React.ButtonHTMLAttributes<HTMLButtonElement>} props - Standard button HTML attributes
+ * @returns {JSX.Element} Rendered button or child element
+ * 
+ * @example
+ * ```tsx
+ * // Default button
+ * <Button>Click me</Button>
+ * 
+ * // Destructive button with custom class
+ * <Button variant="destructive" className="w-full">
+ *   Delete Account
+ * </Button>
+ * 
+ * // Small outline button
+ * <Button variant="outline" size="sm">
+ *   Cancel
+ * </Button>
+ * 
+ * // Icon button
+ * <Button size="icon" variant="ghost">
+ *   <SearchIcon />
+ * </Button>
+ * 
+ * // As child (renders as anchor)
+ * <Button asChild>
+ *   <a href="/dashboard">Go to Dashboard</a>
+ * </Button>
+ * ```
+ */
 function Button({
   className,
   variant,

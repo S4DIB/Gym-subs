@@ -2,13 +2,28 @@ import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth, adminDb } from '@/lib/firebase/admin';
 import { z } from 'zod';
 
-// Admin email addresses - same as frontend
+/**
+ * Admin email addresses with access to member management
+ * These emails are authorized to view and manage all gym members
+ * 
+ * @constant {string[]} ADMIN_EMAILS
+ */
 const ADMIN_EMAILS = [
   "shahsadib25@gmail.com",
   "admin@fitlife.com",
 ];
 
-// Validation schemas
+/**
+ * Zod validation schema for member data
+ * 
+ * Defines the structure and validation rules for member information:
+ * - Required fields: firstName, lastName, email
+ * - Optional fields: phone, dateOfBirth, address, city, zipCode
+ * - Enumerated fields: membershipType, status
+ * - Nested objects: emergencyContact, preferences
+ * 
+ * @constant {z.ZodObject} memberSchema
+ */
 const memberSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
@@ -35,19 +50,59 @@ const memberSchema = z.object({
   }).optional()
 });
 
-// GET - Fetch all members
+/**
+ * Retrieves all gym members (admin only)
+ * 
+ * This endpoint:
+ * - Requires valid Firebase authentication token
+ * - Restricts access to admin users only
+ * - Supports filtering by status, membership type, and search terms
+ * - Returns paginated member data with filtering applied
+ * 
+ * @async
+ * @function GET
+ * @param {NextRequest} request - The incoming HTTP request
+ * @returns {Promise<NextResponse>} JSON response with members array or error
+ * 
+ * @throws {401} Unauthorized - No valid authorization token provided
+ * @throws {403} Forbidden - User is not an admin
+ * @throws {500} Internal Server Error - Server processing error
+ * 
+ * @example
+ * ```typescript
+ * // Request with filters
+ * GET /api/members?status=active&membershipType=premium&search=john
+ * 
+ * // Response
+ * {
+ *   "members": [
+ *     {
+ *       "id": "member123",
+ *       "firstName": "John",
+ *       "lastName": "Doe",
+ *       "email": "john@example.com",
+ *       "membershipType": "premium",
+ *       "status": "active"
+ *     }
+ *   ]
+ * }
+ * ```
+ */
 export async function GET(request: NextRequest) {
   try {
+    // Extract and validate authorization header
     const authHeader = request.headers.get('authorization');
     if (!authHeader) {
       return NextResponse.json({ error: 'No authorization header' }, { status: 401 });
     }
 
+    // Extract token from Bearer format
     const token = authHeader.replace('Bearer ', '');
     let userId: string;
     let userEmail: string;
     
     try {
+      // Verify Firebase authentication token
       const decodedToken = await adminAuth.verifyIdToken(token);
       userId = decodedToken.uid;
       userEmail = decodedToken.email || '';
@@ -61,28 +116,33 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
     }
 
+    // Extract query parameters for filtering
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status');
     const membershipType = searchParams.get('membershipType');
     const search = searchParams.get('search');
 
+    // Build Firestore query
     let query: any = adminDb.collection('members');
 
-    // Apply filters
+    // Apply status filter if specified
     if (status && status !== 'all') {
       query = query.where('status', '==', status);
     }
+    
+    // Apply membership type filter if specified
     if (membershipType && membershipType !== 'all') {
       query = query.where('membershipType', '==', membershipType);
     }
 
+    // Execute query and fetch results
     const snapshot = await query.get();
     let members = snapshot.docs.map((doc: any) => ({
       id: doc.id,
       ...doc.data()
     })) as any[];
 
-    // Apply search filter in memory
+    // Apply search filter in memory (for text-based search)
     if (search) {
       const searchLower = search.toLowerCase();
       members = members.filter((member: any) => 
@@ -93,6 +153,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Return successful response with filtered members
     return NextResponse.json({ members });
   } catch (error: unknown) {
     console.error('Fetch members error:', error);
